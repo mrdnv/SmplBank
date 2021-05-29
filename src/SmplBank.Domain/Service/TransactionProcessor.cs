@@ -23,25 +23,34 @@ namespace SmplBank.Domain.Service
         {
             await semaphoreSlim.WaitAsync();
 
-            var transactions = await this.transactionRepository.GetPendingDepositTransactions();
-
-            foreach (var transaction in transactions)
+            try
             {
-                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                var transactions = await this.transactionRepository.GetPendingDepositTransactions();
+
+                foreach (var transaction in transactions)
                 {
-                    var account = await this.accountRepository.FindAsync(transaction.AccountId);
-                    account.Balance += transaction.Amount;
-                    await this.accountRepository.UpdateAsync(account);
+                    using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        var account = await this.accountRepository.FindAsync(transaction.AccountId);
+                        account.Balance += transaction.Amount;
+                        await this.accountRepository.UpdateAsync(account);
 
-                    transaction.Status = Entity.Enum.TransactionStatus.Completed;
-                    transaction.EndBalance = account.Balance;
-                    await this.transactionRepository.UpdateAsync(transaction);
+                        transaction.Status = Entity.Enum.TransactionStatus.Completed;
+                        transaction.EndBalance = account.Balance;
+                        await this.transactionRepository.UpdateAsync(transaction);
 
-                    scope.Complete();
+                        scope.Complete();
+                    }
                 }
             }
-
-            semaphoreSlim.Release();
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
     }
 }
