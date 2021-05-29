@@ -267,7 +267,6 @@ namespace SmplBank.Domain.Test
         public async Task Verify_TransferAsync_Successfully()
         {
             // Arrange
-            decimal expectedPreBalance = 1000;
             decimal expectedPostBalance = 500;
             var fromAccount = new Account
             {
