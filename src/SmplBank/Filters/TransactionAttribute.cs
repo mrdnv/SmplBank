@@ -16,7 +16,10 @@ namespace SmplBank.Filters
             var dbConnection = context.HttpContext.RequestServices.GetService(typeof(IDbConnection)) as IDbConnection;
 
             if (dbConnection == null)
+            {
                 await base.OnActionExecutionAsync(context, next);
+                return;
+            }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
