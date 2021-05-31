@@ -6,7 +6,7 @@ using SmplBank.Domain.Validation.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace SmplBank.Domain.Validation
+namespace SmplBank.Domain.Validation.Transaction
 {
     public class DepositTransactionValidator : IValidator<Transaction, DepositTransactionDto>
     {
@@ -25,7 +25,7 @@ namespace SmplBank.Domain.Validation
             if (dto.Amount <= 0)
                 throw new ValidationDomainException("Amount must be a positive number.");
 
-            var account = await this.accountRepository.FindAsync(dto.AccountId);
+            var account = await accountRepository.FindAsync(dto.AccountId);
 
             if (account == null)
                 throw new EntityNotFoundDomainException($"Account does not exist.");

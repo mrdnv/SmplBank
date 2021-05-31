@@ -1,14 +1,13 @@
 ﻿using SmplBank.Domain.Dto.Transaction;
-using SmplBank.Domain.Entity;
 using SmplBank.Domain.Exception;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Validation.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace SmplBank.Domain.Validation
+namespace SmplBank.Domain.Validation.Transaction
 {
-    public class WithdrawalTransactionValidator : IValidator<Transaction, WithdrawalTransactionDto>
+    public class WithdrawalTransactionValidator : IValidator<Entity.Transaction, WithdrawalTransactionDto>
     {
         private readonly IAccountRepository accountRepository;
 
@@ -25,7 +24,7 @@ namespace SmplBank.Domain.Validation
             if (dto.Amount <= 0)
                 throw new ValidationDomainException("Amount must be a positive number.");
 
-            var account = await this.accountRepository.FindAsync(dto.AccountId);
+            var account = await accountRepository.FindAsync(dto.AccountId);
 
             if (account == null)
                 throw new EntityNotFoundDomainException($"Account does not exist.");
