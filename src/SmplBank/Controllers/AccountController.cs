@@ -1,8 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SmplBank.Application.Requests;
+using SmplBank.Domain.Dto.AccountDto;
+using SmplBank.Domain.Dto.Transaction;
 using SmplBank.Domain.Entity;
 using SmplBank.Filters;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmplBank.Controllers
@@ -16,8 +19,7 @@ namespace SmplBank.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetAccountInfoAsync()
         {
-            var request = CreateAuthorizedRequest<GetAccountInfoRequest>();
-            var account = await this.mediator.Send(request);
+            var account = await this.SendAuthorizedAsync<GetAccountInfoRequest, AccountDto>();
 
             return Ok(account);
         }
@@ -26,7 +28,7 @@ namespace SmplBank.Controllers
         [Transaction]
         public async Task<IActionResult> DepositAsync([FromBody] DepositTransactionRequest request)
         {
-            await this.mediator.Send(request);
+            await this.SendAsync(request);
 
             return Ok();
         }
@@ -35,7 +37,7 @@ namespace SmplBank.Controllers
         [Transaction]
         public async Task<IActionResult> WithdrawAsync([FromBody] WithdrawalTransactionRequest request)
         {
-            await this.mediator.Send(request);
+            await this.SendAsync(request);
 
             return Ok();
         }
@@ -44,7 +46,7 @@ namespace SmplBank.Controllers
         [Transaction]
         public async Task<IActionResult> TransferAsync([FromBody] TransferTransactionRequest request)
         {
-            await this.mediator.Send(request);
+            await this.SendAsync(request);
 
             return Ok();
         }
@@ -52,8 +54,7 @@ namespace SmplBank.Controllers
         [HttpGet("transactions")]
         public async Task<IActionResult> GetAllTransactionsAsync()
         {
-            var request = CreateAuthorizedRequest<GetAllTransactionRequest>();
-            var transactions = await this.mediator.Send(request);
+            var transactions = await this.SendAuthorizedAsync<GetAllTransactionRequest, IEnumerable<TransactionDto>>();
 
             return Ok(transactions);
         }

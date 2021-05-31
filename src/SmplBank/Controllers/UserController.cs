@@ -16,7 +16,7 @@ namespace SmplBank.Controllers
         [Transaction]
         public async Task<IActionResult> InsertUserAsync(InsertUseRequest request)
         {
-            await this.mediator.Send(request);
+            await this.SendAsync(request);
 
             return Ok();
         }

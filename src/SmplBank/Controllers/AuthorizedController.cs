@@ -4,6 +4,8 @@ using SmplBank.Application.Requests;
 using SmplBank.Domain.Entity;
 using SmplBank.Extensions;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SmplBank.Controllers
 {
@@ -14,15 +16,17 @@ namespace SmplBank.Controllers
         {
         }
 
-        protected T CreateAuthorizedRequest<T>() where T : IAuthorizedRequest, new()
-        {
-            var request = new T
+        private TRequest CreateAuthorizedRequest<TRequest>() where TRequest : IAuthorizedRequest, new()
+            => new()
             {
                 AccountId = this.HttpContext.GetClaimValue<int>($"{nameof(Account)}{nameof(Account.Id)}"),
                 UserId = this.HttpContext.GetClaimValue<int>(ClaimTypes.NameIdentifier)
             };
 
-            return request;
-        }
+        protected Task SendAuthorizedAsync<TRequest>(CancellationToken cancellationToken = default) where TRequest : AuthorizedRequest, new()
+            => this.SendAsync(CreateAuthorizedRequest<TRequest>(), cancellationToken);
+
+        protected Task<TResponse> SendAuthorizedAsync<TRequest, TResponse>(CancellationToken cancellationToken = default) where TRequest : AuthorizedRequest<TResponse>, new()
+            => this.SendAsync(CreateAuthorizedRequest<TRequest>(), cancellationToken);
     }
 }

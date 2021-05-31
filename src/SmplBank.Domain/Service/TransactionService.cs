@@ -26,7 +26,7 @@ namespace SmplBank.Domain.Service
             this.transactionValidatorFactory = transactionValidatorFactory;
         }
 
-        public async Task DepositAsync(DepositTransactionDto dto)
+        public async Task<int> DepositAsync(DepositTransactionDto dto)
         {
             var account = (await this.transactionValidatorFactory
                 .Resolve<DepositTransactionDto>()
@@ -38,11 +38,11 @@ namespace SmplBank.Domain.Service
                 AccountId = account.Id,
                 Amount = dto.Amount,
                 Type = TransactionType.Deposit,
+                Status = TransactionStatus.Pending,
                 Description = $"Deposit ${dto.Amount}."
             };
 
-            await this.transactionRepository.InsertAsync(transaction);
-            await this.accountRepository.UpdateAsync(account);
+            return await this.transactionRepository.InsertAsync(transaction);
         }
 
         public async Task<IEnumerable<TransactionDto>> GetAllTransactionsAsync(int accountId)
@@ -89,27 +89,54 @@ namespace SmplBank.Domain.Service
             await this.transactionRepository.UpdateAsync(withdrawalTransaction);
         }
 
-        public async Task WithdrawAsync(WithdrawalTransactionDto dto)
+        public async Task<int> WithdrawAsync(WithdrawalTransactionDto dto)
         {
             var account = (await this.transactionValidatorFactory
                 .Resolve<WithdrawalTransactionDto>()
                 .ValidateAsync(dto))
                 .GetFederatedObject<Account>(_ => _.AccountId);
 
-            account.Balance -= dto.Amount;
-
             var transaction = new Transaction
             {
                 AccountId = account.Id,
                 Amount = dto.Amount,
                 Type = TransactionType.Withdraw,
-                Status = TransactionStatus.Completed,
-                Description = $"Withdraw ${dto.Amount}",
-                EndBalance = account.Balance
+                Status = TransactionStatus.Pending,
+                Description = $"Withdraw ${dto.Amount}.",
+                EndBalance = null
             };
 
-            await this.transactionRepository.InsertAsync(transaction);
+            return await this.transactionRepository.InsertAsync(transaction);
+        }
+
+
+        public async Task ProcessTransaction(int transactionId)
+        {
+            var transaction = await this.transactionRepository.FindAsync(transactionId);
+
+            if (transaction.Status != Entity.Enum.TransactionStatus.Pending)
+                return;
+
+            var amount = transaction.Amount;
+
+            switch (transaction.Type)
+            {
+                case Entity.Enums.TransactionType.Deposit:
+                    break;
+                case Entity.Enums.TransactionType.Withdraw:
+                    amount *= -1;
+                    break;
+                default:
+                    return;
+            }
+
+            var account = await this.accountRepository.FindAsync(transaction.AccountId);
+            account.Balance += amount;
             await this.accountRepository.UpdateAsync(account);
+
+            transaction.Status = Entity.Enum.TransactionStatus.Completed;
+            transaction.EndBalance = account.Balance;
+            await this.transactionRepository.UpdateAsync(transaction);
         }
     }
 }

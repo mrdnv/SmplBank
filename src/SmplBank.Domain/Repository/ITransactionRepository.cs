@@ -7,7 +7,7 @@ namespace SmplBank.Domain.Repository
 {
     public interface ITransactionRepository : IRepository<Transaction>
     {
-        Task<IEnumerable<Transaction>> GetPendingDepositTransactions(int itemCount = 10);
+        Task<IEnumerable<Transaction>> GetPendingTransferReceiveTransactions(int itemCount = 10);
         Task<IEnumerable<TransactionDto>> GetTransactionsByAccountId(int accountId);
     }
 }

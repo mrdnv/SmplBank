@@ -25,7 +25,7 @@ namespace SmplBank.Domain.Service
 
             try
             {
-                var transactions = await this.transactionRepository.GetPendingDepositTransactions();
+                var transactions = await this.transactionRepository.GetPendingTransferReceiveTransactions();
 
                 foreach (var transaction in transactions)
                 {

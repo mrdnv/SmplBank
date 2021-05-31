@@ -12,21 +12,20 @@ namespace SmplBank.Infrastructure.Repository
 {
     public class TransactionRepository : Repository<Transaction>, ITransactionRepository
     {
-        private static int[] DepositTransactionTypes => new int[] { (int)TransactionType.Deposit, (int)TransactionType.TransferReceive };
         private static int TransferReceiveType => (int)TransactionType.TransferReceive;
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection)
         {
         }
 
-        public Task<IEnumerable<Transaction>> GetPendingDepositTransactions(int itemCount = 10)
+        public Task<IEnumerable<Transaction>> GetPendingTransferReceiveTransactions(int itemCount = 10)
         {
             var query = $@"SELECT TOP {itemCount} *
                     FROM [dbo].[Transaction] 
                     WHERE Status = {(int)TransactionStatus.Pending}
-                    AND Type IN @DepositTransactionTypes";
+                    AND Type = {(int)TransactionType.TransferReceive}";
 
-            return this.dbConnection.QueryAsync<Transaction>(query, new { DepositTransactionTypes });
+            return this.dbConnection.QueryAsync<Transaction>(query);
         }
 
         public Task<IEnumerable<TransactionDto>> GetTransactionsByAccountId(int accountId)
