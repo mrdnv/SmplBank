@@ -75,7 +75,8 @@ namespace SmplBank.Filters
 
                 if (env.IsDevelopment())
                 {
-                    json.DeveloperMessage = context.Exception;
+                    json.DeveloperMessage = $@"{context.Exception.Message}
+{context.Exception.StackTrace}";
                 }
 
                 context.Result = new InternalServerErrorObjectResult(json);
