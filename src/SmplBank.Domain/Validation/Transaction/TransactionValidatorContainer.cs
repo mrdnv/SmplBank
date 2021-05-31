@@ -3,9 +3,9 @@ using SmplBank.Domain.Validation.Interfaces;
 
 namespace SmplBank.Domain.Validation.Transaction
 {
-    public class TransactionValidatorFactory : AbstractValidatorFactory<Entity.Transaction>
+    public class TransactionValidatorContainer : AbstractValidatorContainer<Entity.Transaction>
     {
-        public TransactionValidatorFactory(
+        public TransactionValidatorContainer(
             IValidator<Entity.Transaction, DepositTransactionDto> depositTransactionDto,
             IValidator<Entity.Transaction, TransferTransactionDto> transferTransactionDto,
             IValidator<Entity.Transaction, WithdrawalTransactionDto> withdrawalTransactionDto)

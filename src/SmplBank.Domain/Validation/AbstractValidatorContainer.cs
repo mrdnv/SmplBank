@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace SmplBank.Domain.Validation
 {
-    public abstract class AbstractValidatorFactory<T> : IValidatorFactory<T> where T : Entity.Entity
+    public abstract class AbstractValidatorContainer<T> : IValidatorContainer<T> where T : Entity.Entity
     {
         private readonly Dictionary<Type, object> validatorCollection = new Dictionary<Type, object>();
 
-        protected AbstractValidatorFactory(params object[] validators)
+        protected AbstractValidatorContainer(params object[] validators)
         {
             foreach (var validator in validators)
             {
@@ -27,7 +27,7 @@ namespace SmplBank.Domain.Validation
             }
         }
 
-        public IValidator<T, TDto> Resolve<TDto>() where TDto : class
+        public IValidator<T, TDto> GetValidator<TDto>() where TDto : class
         {
             var validatorType = typeof(IValidator<T, TDto>);
 

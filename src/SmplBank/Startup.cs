@@ -163,7 +163,7 @@ namespace SmplBank
 
         public static IServiceCollection AddValidators(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.AddScoped<IValidatorFactory<Transaction>, TransactionValidatorFactory>()
+            return services.AddScoped<IValidatorContainer<Transaction>, TransactionValidatorContainer>()
                 .AddScoped<IValidator<Transaction, DepositTransactionDto>, DepositTransactionValidator>()
                 .AddScoped<IValidator<Transaction, TransferTransactionDto>, TransferTransactionValidator>()
                 .AddScoped<IValidator<Transaction, WithdrawalTransactionDto>, WithdrawalTransactionValidator>()

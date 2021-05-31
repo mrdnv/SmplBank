@@ -15,11 +15,11 @@ namespace SmplBank.Domain.Service
     {
         private readonly IAccountRepository accountRepository;
         private readonly ITransactionRepository transactionRepository;
-        private readonly IValidatorFactory<Transaction> transactionValidatorFactory;
+        private readonly IValidatorContainer<Transaction> transactionValidatorFactory;
 
         public TransactionService(IAccountRepository accountRepository, 
             ITransactionRepository transactionRepository, 
-            IValidatorFactory<Transaction> transactionValidatorFactory)
+            IValidatorContainer<Transaction> transactionValidatorFactory)
         {
             this.accountRepository = accountRepository;
             this.transactionRepository = transactionRepository;
@@ -29,7 +29,7 @@ namespace SmplBank.Domain.Service
         public async Task<int> DepositAsync(DepositTransactionDto dto)
         {
             var account = (await this.transactionValidatorFactory
-                .Resolve<DepositTransactionDto>()
+                .GetValidator<DepositTransactionDto>()
                 .ValidateAsync(dto))
                 .GetFederatedObject<Account>(_ => _.AccountId);
 
@@ -52,7 +52,7 @@ namespace SmplBank.Domain.Service
         public async Task TransferAsync(TransferTransactionDto dto)
         {
             var validatedObject = await this.transactionValidatorFactory
-                .Resolve<TransferTransactionDto>()
+                .GetValidator<TransferTransactionDto>()
                 .ValidateAsync(dto);
 
             var fromAccount = validatedObject.GetFederatedObject<Account>(_ => _.FromAccountId);
@@ -92,7 +92,7 @@ namespace SmplBank.Domain.Service
         public async Task<int> WithdrawAsync(WithdrawalTransactionDto dto)
         {
             var account = (await this.transactionValidatorFactory
-                .Resolve<WithdrawalTransactionDto>()
+                .GetValidator<WithdrawalTransactionDto>()
                 .ValidateAsync(dto))
                 .GetFederatedObject<Account>(_ => _.AccountId);
 
