@@ -2,7 +2,7 @@
 
 namespace SmplBank.Domain.Dto.AccountDto
 {
-    public class AccountDto
+    public record AccountDto
     {
         public string AccountNumber { get; set; }
         public decimal Balance { get; set; }

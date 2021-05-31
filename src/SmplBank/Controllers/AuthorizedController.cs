@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using SmplBank.Application.Requests;
 using SmplBank.Domain.Entity;
+using SmplBank.Extensions;
 using System.Security.Claims;
 
 namespace SmplBank.Controllers
@@ -13,15 +14,12 @@ namespace SmplBank.Controllers
         {
         }
 
-        protected int AccountId => int.Parse(
-            (HttpContext.User.Identity as ClaimsIdentity)
-            .FindFirst($"{nameof(Account)}{nameof(Account.Id)}").Value);
-
         protected T CreateAuthorizedRequest<T>() where T : IAuthorizedRequest, new()
         {
             var request = new T
             {
-                AccountId = AccountId
+                AccountId = this.HttpContext.GetClaimValue<int>($"{nameof(Account)}{nameof(Account.Id)}"),
+                UserId = this.HttpContext.GetClaimValue<int>(ClaimTypes.NameIdentifier)
             };
 
             return request;

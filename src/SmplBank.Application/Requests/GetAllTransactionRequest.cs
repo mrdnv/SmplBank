@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SmplBank.Application.Requests
 {
-    public class GetAllTransactionRequest : AuthorizedRequest<IEnumerable<TransactionDto>>
+    public record GetAllTransactionRequest : AuthorizedRequest<IEnumerable<TransactionDto>>
     {
     }
 }

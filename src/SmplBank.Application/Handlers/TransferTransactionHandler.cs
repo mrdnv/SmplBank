@@ -18,8 +18,8 @@ namespace SmplBank.Application.Handlers
 
         public async Task<Unit> Handle(TransferTransactionRequest request, CancellationToken cancellationToken)
         {
-            var dto = new TransferTransactionDto { Amount = request.Amount, ToAccountNumber = request.ToAccountNumber };
-            await this.transactionService.TransferAsync(request.AccountId, dto);
+            var dto = new TransferTransactionDto { Amount = request.Amount, ToAccountNumber = request.ToAccountNumber, FromAccountId = request.AccountId };
+            await this.transactionService.TransferAsync(dto);
 
             return Unit.Value;
         }

@@ -2,7 +2,7 @@
 
 namespace SmplBank.Application.Requests
 {
-    public class GetAccountInfoRequest : AuthorizedRequest<AccountDto>
+    public record GetAccountInfoRequest : AuthorizedRequest<AccountDto>
     {
     }
 }

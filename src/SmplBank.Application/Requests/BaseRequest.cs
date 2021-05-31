@@ -9,11 +9,11 @@ namespace SmplBank.Application.Requests
         int UserId { get; set; }
     }
 
-    public abstract class AuthorizedRequest : AuthorizedRequest<Unit>
+    public abstract record AuthorizedRequest : AuthorizedRequest<Unit>
     {
     }
 
-    public abstract class AuthorizedRequest<TResponse> : BaseRequest<TResponse>, IAuthorizedRequest
+    public abstract record AuthorizedRequest<TResponse> : BaseRequest<TResponse>, IAuthorizedRequest
     {
         [JsonIgnore]
         public int AccountId { get; set; }
@@ -22,7 +22,7 @@ namespace SmplBank.Application.Requests
         public int UserId { get; set; }
     }
 
-    public abstract class BaseRequest<TResponse> : IRequest<TResponse>
+    public abstract record BaseRequest<TResponse> : IRequest<TResponse>
     {
 
     }

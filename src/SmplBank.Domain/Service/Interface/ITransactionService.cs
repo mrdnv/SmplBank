@@ -6,9 +6,9 @@ namespace SmplBank.Domain.Service.Interface
 {
     public interface ITransactionService
     {
-        Task DepositAsync(int accountId, DepositTransactionDto dto);
-        Task WithdrawAsync(int accountId, WithdrawalTransactionDto dto);
-        Task TransferAsync(int accountId, TransferTransactionDto dto);
+        Task DepositAsync(DepositTransactionDto dto);
+        Task WithdrawAsync(WithdrawalTransactionDto dto);
+        Task TransferAsync(TransferTransactionDto dto);
         Task<IEnumerable<TransactionDto>> GetAllTransactionsAsync(int accountId);
     }
 }

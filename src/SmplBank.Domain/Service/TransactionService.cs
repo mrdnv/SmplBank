@@ -2,11 +2,9 @@
 using SmplBank.Domain.Entity;
 using SmplBank.Domain.Entity.Enum;
 using SmplBank.Domain.Entity.Enums;
-using SmplBank.Domain.Exception;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Service.Interface;
 using SmplBank.Domain.Validation.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,9 +26,8 @@ namespace SmplBank.Domain.Service
             this.transactionValidatorFactory = transactionValidatorFactory;
         }
 
-        public async Task DepositAsync(int accountId, DepositTransactionDto dto)
+        public async Task DepositAsync(DepositTransactionDto dto)
         {
-            dto.AccountId = accountId;
             var account = (await this.transactionValidatorFactory
                 .Resolve<DepositTransactionDto>()
                 .ValidateAsync(dto))
@@ -41,7 +38,7 @@ namespace SmplBank.Domain.Service
                 AccountId = account.Id,
                 Amount = dto.Amount,
                 Type = TransactionType.Deposit,
-                Description = $"Withdraw ${dto.Amount}."
+                Description = $"Deposit ${dto.Amount}."
             };
 
             await this.transactionRepository.InsertAsync(transaction);
@@ -52,10 +49,8 @@ namespace SmplBank.Domain.Service
             => (await this.transactionRepository.GetTransactionsByAccountId(accountId))
                 .OrderByDescending(_ => _.TransactionDate);
 
-        public async Task TransferAsync(int accountId, TransferTransactionDto dto)
+        public async Task TransferAsync(TransferTransactionDto dto)
         {
-            dto.FromAccountId = accountId;
-
             var validatedObject = await this.transactionValidatorFactory
                 .Resolve<TransferTransactionDto>()
                 .ValidateAsync(dto);
@@ -94,9 +89,8 @@ namespace SmplBank.Domain.Service
             await this.transactionRepository.UpdateAsync(withdrawalTransaction);
         }
 
-        public async Task WithdrawAsync(int accountId, WithdrawalTransactionDto dto)
+        public async Task WithdrawAsync(WithdrawalTransactionDto dto)
         {
-            dto.AccountId = accountId;
             var account = (await this.transactionValidatorFactory
                 .Resolve<WithdrawalTransactionDto>()
                 .ValidateAsync(dto))
@@ -110,7 +104,7 @@ namespace SmplBank.Domain.Service
                 Amount = dto.Amount,
                 Type = TransactionType.Withdraw,
                 Status = TransactionStatus.Completed,
-                Description = $"Deposit ${dto.Amount}",
+                Description = $"Withdraw ${dto.Amount}",
                 EndBalance = account.Balance
             };
 

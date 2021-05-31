@@ -1,9 +1,9 @@
 ﻿namespace SmplBank.Domain.Dto.Transaction
 {
-    public class DepositTransactionDto
+    public record DepositTransactionDto
     {
         public decimal Amount { get; set; }
 
-        internal int AccountId { get; set; }
+        public int AccountId { get; set; }
     }
 }

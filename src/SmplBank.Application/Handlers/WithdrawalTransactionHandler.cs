@@ -18,8 +18,8 @@ namespace SmplBank.Application.Handlers
 
         public async Task<Unit> Handle(WithdrawalTransactionRequest request, CancellationToken cancellationToken)
         {
-            var dto = new WithdrawalTransactionDto { Amount = request.Amount };
-            await this.transactionService.WithdrawAsync(request.AccountId, dto);
+            var dto = new WithdrawalTransactionDto { Amount = request.Amount, AccountId = request.AccountId };
+            await this.transactionService.WithdrawAsync(dto);
 
             return Unit.Value;
         }
