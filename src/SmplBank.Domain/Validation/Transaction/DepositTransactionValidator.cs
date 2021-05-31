@@ -1,5 +1,4 @@
 ﻿using SmplBank.Domain.Dto.Transaction;
-using SmplBank.Domain.Entity;
 using SmplBank.Domain.Exception;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Validation.Interfaces;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmplBank.Domain.Validation.Transaction
 {
-    public class DepositTransactionValidator : IValidator<Transaction, DepositTransactionDto>
+    public class DepositTransactionValidator : IValidator<Entity.Transaction, DepositTransactionDto>
     {
         private readonly IAccountRepository accountRepository;
 
