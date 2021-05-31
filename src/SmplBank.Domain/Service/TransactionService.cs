@@ -34,7 +34,7 @@ namespace SmplBank.Domain.Service
             var account = (await this.transactionValidatorFactory
                 .Resolve<DepositTransactionDto>()
                 .ValidateAsync(dto))
-                .GetFederatedObject<Account>();
+                .GetFederatedObject<Account>(_ => _.AccountId);
 
             var transaction = new Transaction
             {

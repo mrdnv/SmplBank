@@ -30,7 +30,7 @@ namespace SmplBank.Domain.Validation.Transaction
                 throw new EntityNotFoundDomainException($"Account does not exist.");
 
             var validatedObject = new ValidatedObject<DepositTransactionDto>();
-            validatedObject.AddFederatedObject(account);
+            validatedObject.AddFederatedObject(account, _ => _.AccountId);
 
             return validatedObject;
         }
