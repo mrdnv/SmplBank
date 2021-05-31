@@ -14,27 +14,12 @@ namespace SmplBank.Domain.Validation
 
         }
 
-        internal void AddFederatedObject<TFederated>(TFederated obj)
-        {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-
-            this.federatedObjects.Add(GenerateFederatedObjectKey(), obj);
-        }
-
         internal void AddFederatedObject<TFederated>(TFederated obj, Expression<Func<T, object>> predicate)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
             this.federatedObjects.Add(GenerateFederatedObjectKey(predicate), obj);
-        }
-
-        public TFederated GetFederatedObject<TFederated>()
-        {
-            var key = GenerateFederatedObjectKey();
-
-            return GetFederatedObject<TFederated>(key);
         }
 
         public TFederated GetFederatedObject<TFederated>(Expression<Func<T, object>> predicate)
@@ -63,10 +48,11 @@ namespace SmplBank.Domain.Validation
             if ((predicate.Body is MemberExpression) ||
                 (predicate.Body is UnaryExpression unaryExpression && unaryExpression.Operand is MemberExpression))
             {
-                var memberExpression = (predicate.Body as MemberExpression) ?? 
+                var body = (predicate.Body as MemberExpression) ?? 
                     ((predicate.Body as UnaryExpression).Operand as MemberExpression);
-                var memberExpresion = GetMemberExpression(memberExpression);
-                var propertyName = memberExpresion.Member.Name;
+
+                var memberExpression = GetMemberExpression(body);
+                var propertyName = memberExpression.Member.Name;
 
                 return $"{typeof(T).Name}.{propertyName}";
             }
