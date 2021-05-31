@@ -20,7 +20,7 @@ namespace SmplBank.Domain.Validation
 
                 if (interfaceType == null)
                 {
-                    throw new ArgumentException("Invalid validator type.");
+                    throw new ArgumentException($"{validatorType.Name} is not a valid validator type.");
                 }
 
                 validatorCollection.Add(interfaceType, validator);
