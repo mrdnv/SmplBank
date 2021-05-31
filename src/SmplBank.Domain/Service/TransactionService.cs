@@ -5,6 +5,7 @@ using SmplBank.Domain.Entity.Enums;
 using SmplBank.Domain.Exception;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Service.Interface;
+using SmplBank.Domain.Validation.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,25 +17,24 @@ namespace SmplBank.Domain.Service
     {
         private readonly IAccountRepository accountRepository;
         private readonly ITransactionRepository transactionRepository;
+        private readonly IValidatorFactory<Transaction> transactionValidatorFactory;
 
-        public TransactionService(IAccountRepository accountRepository, ITransactionRepository transactionRepository)
+        public TransactionService(IAccountRepository accountRepository, 
+            ITransactionRepository transactionRepository, 
+            IValidatorFactory<Transaction> transactionValidatorFactory)
         {
             this.accountRepository = accountRepository;
             this.transactionRepository = transactionRepository;
+            this.transactionValidatorFactory = transactionValidatorFactory;
         }
 
         public async Task DepositAsync(int accountId, DepositTransactionDto dto)
         {
-            if (dto == null)
-                throw new ArgumentNullException(nameof(dto));
-
-            if (dto.Amount <= 0)
-                throw new ValidationDomainException("Amount must be a positive number.");
-
-            var account = await this.accountRepository.FindAsync(accountId);
-
-            if (account == null)
-                throw new EntityNotFoundDomainException($"Account does not exist.");
+            dto.AccountId = accountId;
+            var account = (await this.transactionValidatorFactory
+                .Resolve<DepositTransactionDto>()
+                .ValidateAsync(dto))
+                .GetFederatedObject<Account>();
 
             var transaction = new Transaction
             {
@@ -54,24 +54,14 @@ namespace SmplBank.Domain.Service
 
         public async Task TransferAsync(int accountId, TransferTransactionDto dto)
         {
-            if (dto == null)
-                throw new ArgumentNullException(nameof(dto));
+            dto.FromAccountId = accountId;
 
-            if (dto.Amount <= 0)
-                throw new ValidationDomainException("Amount must be a positive number.");
+            var validatedObject = await this.transactionValidatorFactory
+                .Resolve<TransferTransactionDto>()
+                .ValidateAsync(dto);
 
-            var fromAccount = await this.accountRepository.FindAsync(accountId);
-
-            if (fromAccount == null)
-                throw new EntityNotFoundDomainException($"From Account does not exist.");
-
-            if (fromAccount.Balance < dto.Amount)
-                throw new ValidationDomainException($"Insufficient balance.");
-
-            var toAccount = await this.accountRepository.GetByAccountNumberAsync(dto.ToAccountNumber);
-
-            if (toAccount == null)
-                throw new EntityNotFoundDomainException($"To Account does not exist.");
+            var fromAccount = validatedObject.GetFederatedObject<Account>(_ => _.FromAccountId);
+            var toAccount = validatedObject.GetFederatedObject<Account>(_ => _.ToAccountNumber);
 
             var withdrawalTransaction = new Transaction
             {
@@ -106,19 +96,11 @@ namespace SmplBank.Domain.Service
 
         public async Task WithdrawAsync(int accountId, WithdrawalTransactionDto dto)
         {
-            if (dto == null)
-                throw new ArgumentNullException(nameof(dto));
-
-            if (dto.Amount <= 0)
-                throw new ValidationDomainException("Amount must be a positive number.");
-
-            var account = await this.accountRepository.FindAsync(accountId);
-
-            if (account == null)
-                throw new EntityNotFoundDomainException($"Account does not exist.");
-
-            if (account.Balance < dto.Amount)
-                throw new ValidationDomainException($"Insufficient balance.");
+            dto.AccountId = accountId;
+            var account = (await this.transactionValidatorFactory
+                .Resolve<WithdrawalTransactionDto>()
+                .ValidateAsync(dto))
+                .GetFederatedObject<Account>(_ => _.AccountId);
 
             account.Balance -= dto.Amount;
 

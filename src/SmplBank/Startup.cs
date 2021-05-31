@@ -9,9 +9,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SmplBank.Authentication;
 using SmplBank.Domain.Common;
+using SmplBank.Domain.Dto.Transaction;
+using SmplBank.Domain.Entity;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Service;
 using SmplBank.Domain.Service.Interface;
+using SmplBank.Domain.Validation;
+using SmplBank.Domain.Validation.Interfaces;
 using SmplBank.Filters;
 using SmplBank.Infrastructure.Common;
 using SmplBank.Infrastructure.Repository;
@@ -42,6 +46,7 @@ namespace SmplBank
                 .AddRepositories(Configuration)
                 .AddCommonServices(Configuration)
                 .AddServices(Configuration)
+                .AddValidators(Configuration)
                 .AddBackgroundJobs(Configuration)
                 .AddControllers(options => options.Filters.Add(typeof(HttpGlobalExceptionFilter)));
         }
@@ -137,6 +142,15 @@ namespace SmplBank
         public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
         {
             return services.AddScoped<ISecurityService, SecurityService>()
+                ;
+        }
+
+        public static IServiceCollection AddValidators(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services.AddScoped<IValidatorFactory<Transaction>, TransactionValidatorFactory>()
+                .AddScoped<IValidator<Transaction, DepositTransactionDto>, DepositTransactionValidator>()
+                .AddScoped<IValidator<Transaction, TransferTransactionDto>, TransferTransactionValidator>()
+                .AddScoped<IValidator<Transaction, WithdrawalTransactionDto>, WithdrawalTransactionValidator>()
                 ;
         }
 
