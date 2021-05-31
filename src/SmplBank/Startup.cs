@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.SqlServer;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SmplBank.Application.Handlers;
+using SmplBank.Application.Requests;
 using SmplBank.Authentication;
 using SmplBank.Domain.Common;
 using SmplBank.Domain.Dto.Transaction;
@@ -23,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 
 namespace SmplBank
 {
@@ -44,11 +48,16 @@ namespace SmplBank
                 .AddBasicAuthentication()
                 .AddSqlDbConnection(Configuration)
                 .AddRepositories(Configuration)
+                .AddCQRS()
                 .AddCommonServices(Configuration)
                 .AddServices(Configuration)
                 .AddValidators(Configuration)
                 .AddBackgroundJobs(Configuration)
-                .AddControllers(options => options.Filters.Add(typeof(HttpGlobalExceptionFilter)));
+                .AddControllers(options =>
+                {
+                    options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+                    options.Filters.Add(typeof(AuthorizedRequestTransformActionFilter));
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,6 +137,13 @@ namespace SmplBank
 
             return services;
 
+        }
+
+        public static IServiceCollection AddCQRS(this IServiceCollection services)
+        {
+            return services
+                .AddMediatR(AppDomain.CurrentDomain.Load("SmplBank.Application"))
+                .AddTransient<IRequestHandler<DepositTransactionRequest>, DepositTransactionHandler>();
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)

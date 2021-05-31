@@ -1,29 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SmplBank.Domain.Dto.User;
-using SmplBank.Domain.Service.Interface;
+using SmplBank.Application.Requests;
 using SmplBank.Filters;
 using System.Threading.Tasks;
 
 namespace SmplBank.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
-        private readonly IUserService userService;
-
-        public UserController(IUserService userService)
+        public UserController(IMediator mediator) : base(mediator)
         {
-            this.userService = userService;
         }
 
         [HttpPost("register")]
         [Transaction]
-        [AllowAnonymous]
-        public async Task<IActionResult> InsertUserAsync(InsertUserDto dto)
+        public async Task<IActionResult> InsertUserAsync(InsertUseRequest request)
         {
-            await this.userService.InsertUserAsync(dto);
+            await this.mediator.Send(request);
 
             return Ok();
         }

@@ -13,7 +13,9 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SmplBank.Database", "SmplBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmplBank.Domain.Test", "SmplBank.Domain.Test\SmplBank.Domain.Test.csproj", "{98287B74-CF11-42AB-842D-E0D2CECB2A94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmplBank.Infrastructure.ConcurrencyTest", "SmplBank.Infrastructure.ConcurrencyTest\SmplBank.Infrastructure.ConcurrencyTest.csproj", "{206B60B3-5619-444B-901A-E968C17E98C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmplBank.Infrastructure.ConcurrencyTest", "SmplBank.Infrastructure.ConcurrencyTest\SmplBank.Infrastructure.ConcurrencyTest.csproj", "{206B60B3-5619-444B-901A-E968C17E98C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmplBank.Application", "SmplBank.Application\SmplBank.Application.csproj", "{9377278E-E491-42D4-9638-494AF38CE6CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{206B60B3-5619-444B-901A-E968C17E98C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{206B60B3-5619-444B-901A-E968C17E98C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{206B60B3-5619-444B-901A-E968C17E98C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9377278E-E491-42D4-9638-494AF38CE6CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9377278E-E491-42D4-9638-494AF38CE6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9377278E-E491-42D4-9638-494AF38CE6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9377278E-E491-42D4-9638-494AF38CE6CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
