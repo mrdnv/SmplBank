@@ -9,19 +9,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using SmplBank.Application.Handlers;
 using SmplBank.Application.PipelineBehaviors;
-using SmplBank.Application.Requests.Commands;
-using SmplBank.Application.Responses;
 using SmplBank.Authentication;
 using SmplBank.Domain.Common;
-using SmplBank.Domain.Dto.Transaction;
-using SmplBank.Domain.Entity;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Service;
 using SmplBank.Domain.Service.Interface;
-using SmplBank.Domain.Validation.Interfaces;
-using SmplBank.Domain.Validation.Transaction;
 using SmplBank.Filters;
 using SmplBank.Infrastructure.Common;
 using SmplBank.Infrastructure.Repository;
@@ -29,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Reflection;
 
 namespace SmplBank
 {
@@ -55,7 +47,6 @@ namespace SmplBank
                 .AddValidators()
                 .AddCommonServices(Configuration)
                 .AddServices(Configuration)
-                .AddValidators(Configuration)
                 .AddBackgroundJobs(Configuration)
                 .AddControllers(options =>
                 {
@@ -161,22 +152,13 @@ namespace SmplBank
             return services.AddScoped<IUserService, UserService>()
                 .AddScoped<IAccountService, AccountService>()
                 .AddScoped<ITransactionService, TransactionService>()
-                .AddScoped<ITransactionProcessor, TransactionProcessor>()
+                .AddSingleton<ITransactionProcessor, TransactionProcessor>()
                 ;
         }
 
         public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
         {
             return services.AddScoped<ISecurityService, SecurityService>()
-                ;
-        }
-
-        public static IServiceCollection AddValidators(this IServiceCollection services, IConfiguration configuration)
-        {
-            return services.AddScoped<IValidatorContainer<Transaction>, TransactionValidatorContainer>()
-                .AddScoped<IValidator<Transaction, DepositTransactionDto>, DepositTransactionValidator>()
-                .AddScoped<IValidator<Transaction, TransferTransactionDto>, TransferTransactionValidator>()
-                .AddScoped<IValidator<Transaction, WithdrawalTransactionDto>, WithdrawalTransactionValidator>()
                 ;
         }
 

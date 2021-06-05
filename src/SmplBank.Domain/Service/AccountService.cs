@@ -1,6 +1,5 @@
 ﻿using SmplBank.Domain.Dto.AccountDto;
 using SmplBank.Domain.Entity;
-using SmplBank.Domain.Exception;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Service.Interface;
 using System.Collections.Generic;
@@ -20,9 +19,6 @@ namespace SmplBank.Domain.Service
         public async Task<AccountDto> FindAsync(int id)
         {
             var account = await this.accountRepository.FindAsync(id);
-
-            if (account == null)
-                throw new EntityNotFoundDomainException($"Account with Id {id} cannot be found.");
 
             return new AccountDto
             {

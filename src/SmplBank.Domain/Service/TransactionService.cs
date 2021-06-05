@@ -4,7 +4,6 @@ using SmplBank.Domain.Entity.Enum;
 using SmplBank.Domain.Entity.Enums;
 using SmplBank.Domain.Repository;
 using SmplBank.Domain.Service.Interface;
-using SmplBank.Domain.Validation.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,23 +14,17 @@ namespace SmplBank.Domain.Service
     {
         private readonly IAccountRepository accountRepository;
         private readonly ITransactionRepository transactionRepository;
-        private readonly IValidatorContainer<Transaction> transactionValidatorFactory;
 
         public TransactionService(IAccountRepository accountRepository, 
-            ITransactionRepository transactionRepository, 
-            IValidatorContainer<Transaction> transactionValidatorFactory)
+            ITransactionRepository transactionRepository)
         {
             this.accountRepository = accountRepository;
             this.transactionRepository = transactionRepository;
-            this.transactionValidatorFactory = transactionValidatorFactory;
         }
 
         public async Task<int> DepositAsync(DepositTransactionDto dto)
         {
-            var account = (await this.transactionValidatorFactory
-                .GetValidator<DepositTransactionDto>()
-                .ValidateAsync(dto))
-                .GetFederatedObject<Account>(_ => _.AccountId);
+            var account = await this.accountRepository.FindAsync(dto.AccountId);
 
             var transaction = new Transaction
             {
@@ -51,12 +44,8 @@ namespace SmplBank.Domain.Service
 
         public async Task TransferAsync(TransferTransactionDto dto)
         {
-            var validatedObject = await this.transactionValidatorFactory
-                .GetValidator<TransferTransactionDto>()
-                .ValidateAsync(dto);
-
-            var fromAccount = validatedObject.GetFederatedObject<Account>(_ => _.FromAccountId);
-            var toAccount = validatedObject.GetFederatedObject<Account>(_ => _.ToAccountNumber);
+            var fromAccount = await this.accountRepository.FindAsync(dto.FromAccountId);
+            var toAccount = await this.accountRepository.GetByAccountNumberAsync(dto.ToAccountNumber);
 
             var withdrawalTransaction = new Transaction
             {
@@ -91,10 +80,7 @@ namespace SmplBank.Domain.Service
 
         public async Task<int> WithdrawAsync(WithdrawalTransactionDto dto)
         {
-            var account = (await this.transactionValidatorFactory
-                .GetValidator<WithdrawalTransactionDto>()
-                .ValidateAsync(dto))
-                .GetFederatedObject<Account>(_ => _.AccountId);
+            var account = await this.accountRepository.FindAsync(dto.AccountId);
 
             var transaction = new Transaction
             {
@@ -114,16 +100,16 @@ namespace SmplBank.Domain.Service
         {
             var transaction = await this.transactionRepository.FindAsync(transactionId);
 
-            if (transaction.Status != Entity.Enum.TransactionStatus.Pending)
+            if (transaction.Status != TransactionStatus.Pending)
                 return;
 
             var amount = transaction.Amount;
 
             switch (transaction.Type)
             {
-                case Entity.Enums.TransactionType.Deposit:
+                case TransactionType.Deposit:
                     break;
-                case Entity.Enums.TransactionType.Withdraw:
+                case TransactionType.Withdraw:
                     amount *= -1;
                     break;
                 default:

@@ -30,22 +30,8 @@ namespace SmplBank.Domain.Service
 
         public async Task InsertUserAsync(InsertUserDto dto)
         {
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
-
-            if (string.IsNullOrWhiteSpace(dto.Username))
-                throw new ValidationDomainException($"{nameof(dto.Username)} cannot be empty.");
-
-            if (string.IsNullOrWhiteSpace(dto.Password))
-                throw new ValidationDomainException($"{nameof(dto.Password)} cannot be empty.");
-
             var username = dto.Username.Trim();
             var password = dto.Password.Trim();
-
-            var doesUsernameExist = await this.userRepository.DoesUsernameExistAsync(username);
-
-            if (doesUsernameExist)
-                throw new DuplicationDomainException($"Username {username} already exist.");
-
             var hashedPassword = this.securityService.HashPassword(password);
 
             var user = new User
