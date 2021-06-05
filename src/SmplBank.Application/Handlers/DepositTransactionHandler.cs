@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SmplBank.Application.Notifications;
-using SmplBank.Application.Requests;
+using SmplBank.Application.Requests.Commands;
 using SmplBank.Domain.Dto.Transaction;
 using SmplBank.Domain.Service.Interface;
 using System.Threading;
@@ -8,24 +8,22 @@ using System.Threading.Tasks;
 
 namespace SmplBank.Application.Handlers
 {
-    public class DepositTransactionHandler : IRequestHandler<DepositTransactionRequest>
+    public class DepositTransactionHandler : BaseHandler<DepositTransactionCommand>
     {
-        private readonly IMediator mediator;
+        private readonly IPublisher publisher;
         private readonly ITransactionService transactionService;
 
-        public DepositTransactionHandler(IMediator mediator, ITransactionService transactionService)
+        public DepositTransactionHandler(IPublisher publisher, ITransactionService transactionService) : base()
         {
-            this.mediator = mediator;
+            this.publisher = publisher;
             this.transactionService = transactionService;
         }
 
-        public async Task<Unit> Handle(DepositTransactionRequest request, CancellationToken cancellationToken)
+        protected async override Task Process(DepositTransactionCommand request, CancellationToken cancellationToken)
         {
             var dto = new DepositTransactionDto { Amount = request.Amount, AccountId = request.AccountId };
             var transactionId = await this.transactionService.DepositAsync(dto);
-            await this.mediator.Publish(new TransactionCreatedNotification { TransactionId = transactionId });
-
-            return Unit.Value;
+            await this.publisher.Publish(new TransactionCreatedNotification { TransactionId = transactionId });
         }
     }
 }

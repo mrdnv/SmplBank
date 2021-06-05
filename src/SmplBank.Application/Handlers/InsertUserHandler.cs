@@ -1,5 +1,4 @@
-﻿using MediatR;
-using SmplBank.Application.Requests;
+﻿using SmplBank.Application.Requests.Commands;
 using SmplBank.Domain.Dto.User;
 using SmplBank.Domain.Service.Interface;
 using System.Threading;
@@ -7,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace SmplBank.Application.Handlers
 {
-    public class InsertUserHandler : IRequestHandler<InsertUseRequest>
+    public class InsertUserHandler : BaseHandler<InsertUserCommand>
     {
         private readonly IUserService userService;
 
-        public InsertUserHandler(IUserService userService)
+        public InsertUserHandler(IUserService userService) : base()
         {
             this.userService = userService;
         }
 
-        public async Task<Unit> Handle(InsertUseRequest request, CancellationToken cancellationToken)
+        protected async override Task Process(InsertUserCommand request, CancellationToken cancellationToken)
         {
             var dto = new InsertUserDto
             {
@@ -25,8 +24,6 @@ namespace SmplBank.Application.Handlers
             };
 
             await this.userService.InsertUserAsync(dto);
-
-            return Unit.Value;
         }
     }
 }

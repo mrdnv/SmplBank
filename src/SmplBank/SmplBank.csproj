@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Model\**" />
+    <Content Remove="Model\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.2.3" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.23" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.23" />
     <PackageReference Include="MediatR" Version="9.0.0" />
@@ -20,10 +28,6 @@
     <ProjectReference Include="..\SmplBank.Application\SmplBank.Application.csproj" />
     <ProjectReference Include="..\SmplBank.Domain\SmplBank.Domain.csproj" />
     <ProjectReference Include="..\SmplBank.Infrastructure\SmplBank.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Model\" />
   </ItemGroup>
 
 

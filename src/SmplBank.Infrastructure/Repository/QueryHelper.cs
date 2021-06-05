@@ -102,5 +102,15 @@ namespace SmplBank.Infrastructure.Repository
 
             return $"SELECT {selectQuery} FROM [dbo].[{entityType.Name}] WHERE [{nameof(Entity.Id)}] = @{nameof(Entity.Id)}";
         }
+
+        public static string GenerateExistByIdQuery<T>() where T : Entity
+        {
+            return $"SELECT 1 FROM [dbo].[{typeof(T).Name}] WHERE [{nameof(Entity.Id)}] = @{nameof(Entity.Id)}";
+        }
+
+        public static string GenerateCheckExistQuery<T>(string columnName) where T : Entity
+        {
+            return $"SELECT 1 FROM [dbo].[{typeof(T).Name}] WHERE [{columnName}] = @{columnName}";
+        }
     }
 }

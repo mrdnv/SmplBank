@@ -1,8 +1,8 @@
 ﻿using MediatR;
 
-namespace SmplBank.Application.Requests
+namespace SmplBank.Application.Requests.Commands
 {
-    public record InsertUseRequest : IRequest
+    public record InsertUserCommand : BaseRequest
     {
         public string Username { get; set; }
         public string Password { get; set; }

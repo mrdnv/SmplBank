@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SmplBank.Application.Requests;
+using SmplBank.Application.Requests.Commands;
+using SmplBank.Application.Requests.Queries;
 using SmplBank.Domain.Dto.AccountDto;
 using SmplBank.Domain.Dto.Transaction;
 using SmplBank.Domain.Entity;
@@ -12,51 +13,27 @@ namespace SmplBank.Controllers
 {
     public class AccountController : AuthorizedController
     {
-        public AccountController(IMediator mediator) : base(mediator)
+        public AccountController(ISender sender) : base(sender)
         {
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> GetAccountInfoAsync()
-        {
-            var account = await this.SendAuthorizedAsync<GetAccountInfoRequest, AccountDto>();
-
-            return Ok(account);
-        }
+        public Task<IActionResult> GetAccountInfoAsync() => this.SendAuthorizedAsync<GetAccountInfoQuery, AccountDto>();
 
         [HttpPost("deposit")]
         [Transaction]
-        public async Task<IActionResult> DepositAsync([FromBody] DepositTransactionRequest request)
-        {
-            await this.SendAsync(request);
-
-            return Ok();
-        }
+        public Task<IActionResult> DepositAsync([FromBody] DepositTransactionCommand request) => this.SendAsync(request);
 
         [HttpPost("withdraw")]
         [Transaction]
-        public async Task<IActionResult> WithdrawAsync([FromBody] WithdrawalTransactionRequest request)
-        {
-            await this.SendAsync(request);
-
-            return Ok();
-        }
+        public Task<IActionResult> WithdrawAsync([FromBody] WithdrawalTransactionCommand request) => this.SendAsync(request);
 
         [HttpPost("transfer")]
         [Transaction]
-        public async Task<IActionResult> TransferAsync([FromBody] TransferTransactionRequest request)
-        {
-            await this.SendAsync(request);
-
-            return Ok();
-        }
+        public Task<IActionResult> TransferAsync([FromBody] TransferTransactionCommand request) => this.SendAsync(request);
 
         [HttpGet("transactions")]
-        public async Task<IActionResult> GetAllTransactionsAsync()
-        {
-            var transactions = await this.SendAuthorizedAsync<GetAllTransactionRequest, IEnumerable<TransactionDto>>();
-
-            return Ok(transactions);
-        }
+        public Task<IActionResult> GetAllTransactionsAsync()
+            => this.SendAuthorizedAsync<GetAllTransactionQuery, IEnumerable<TransactionDto>>();
     }
 }

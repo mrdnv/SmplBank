@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SmplBank.Application.Responses;
 using System.Text.Json.Serialization;
 
 namespace SmplBank.Application.Requests
@@ -9,8 +10,13 @@ namespace SmplBank.Application.Requests
         int UserId { get; set; }
     }
 
-    public abstract record AuthorizedRequest : AuthorizedRequest<Unit>
+    public abstract record AuthorizedRequest : BaseRequest, IAuthorizedRequest
     {
+        [JsonIgnore]
+        public int AccountId { get; set; }
+
+        [JsonIgnore]
+        public int UserId { get; set; }
     }
 
     public abstract record AuthorizedRequest<TResponse> : BaseRequest<TResponse>, IAuthorizedRequest
@@ -22,8 +28,7 @@ namespace SmplBank.Application.Requests
         public int UserId { get; set; }
     }
 
-    public abstract record BaseRequest<TResponse> : IRequest<TResponse>
-    {
+    public abstract record BaseRequest<TResponse> : IRequest<Response<TResponse>> { }
 
-    }
+    public abstract record BaseRequest : IRequest<Response> { }
 }

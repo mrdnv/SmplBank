@@ -1,5 +1,4 @@
-﻿using MediatR;
-using SmplBank.Application.Requests;
+﻿using SmplBank.Application.Requests.Queries;
 using SmplBank.Domain.Dto.Transaction;
 using SmplBank.Domain.Service.Interface;
 using System.Collections.Generic;
@@ -8,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SmplBank.Application.Handlers
 {
-    public class GetAllTransactionsHandler : IRequestHandler<GetAllTransactionRequest, IEnumerable<TransactionDto>>
+    public class GetAllTransactionsHandler : BaseHandler<GetAllTransactionQuery, IEnumerable<TransactionDto>>
     {
         private readonly ITransactionService transactionService;
 
-        public GetAllTransactionsHandler(ITransactionService transactionService)
+        public GetAllTransactionsHandler(ITransactionService transactionService) : base()
         {
             this.transactionService = transactionService;
         }
 
-        public Task<IEnumerable<TransactionDto>> Handle(GetAllTransactionRequest request, CancellationToken cancellationToken)
+        protected override Task<IEnumerable<TransactionDto>> Process(GetAllTransactionQuery request, CancellationToken cancellationToken)
             => this.transactionService.GetAllTransactionsAsync(request.AccountId);
     }
 }

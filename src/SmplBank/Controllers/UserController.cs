@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SmplBank.Application.Requests;
+using SmplBank.Application.Requests.Commands;
 using SmplBank.Filters;
 using System.Threading.Tasks;
 
@@ -8,17 +8,12 @@ namespace SmplBank.Controllers
 {
     public class UserController : BaseController
     {
-        public UserController(IMediator mediator) : base(mediator)
+        public UserController(ISender sender) : base(sender)
         {
         }
 
         [HttpPost("register")]
         [Transaction]
-        public async Task<IActionResult> InsertUserAsync(InsertUseRequest request)
-        {
-            await this.SendAsync(request);
-
-            return Ok();
-        }
+        public Task<IActionResult> InsertUserAsync(InsertUserCommand request) => this.SendAsync(request);
     }
 }

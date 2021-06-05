@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Dapper;
 using SmplBank.Infrastructure.Exception;
 using System;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 
 namespace SmplBank.Infrastructure.Repository
 {
@@ -15,6 +17,27 @@ namespace SmplBank.Infrastructure.Repository
         public Repository(IDbConnection dbConnection)
         {
             this.dbConnection = dbConnection;
+        }
+
+        public Task<bool> CheckExist<TProperty>(Expression<Func<T, TProperty>> predicate, TProperty value)
+        {
+            if (predicate.Body is not MemberExpression memberExpression)
+                throw new ArgumentException("Predicate must be a property selector", nameof(predicate));
+
+            var propertyName = memberExpression.Member.Name;
+            var parameters = new DynamicParameters();
+            parameters.Add(propertyName, value);
+
+            var query = QueryHelper.GenerateCheckExistQuery<T>(propertyName);
+
+            return this.dbConnection.ExecuteScalarAsync<bool>(query, parameters);
+        }
+
+        public Task<bool> CheckExistAsync(int id)
+        {
+            var query = QueryHelper.GenerateExistByIdQuery<T>();
+
+            return this.dbConnection.ExecuteScalarAsync<bool>(query, new { Id = id });
         }
 
         public virtual Task<T> FindAsync(int id)

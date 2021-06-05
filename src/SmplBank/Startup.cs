@@ -1,3 +1,4 @@
+using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
 using MediatR;
@@ -9,7 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SmplBank.Application.Handlers;
-using SmplBank.Application.Requests;
+using SmplBank.Application.PipelineBehaviors;
+using SmplBank.Application.Requests.Commands;
+using SmplBank.Application.Responses;
 using SmplBank.Authentication;
 using SmplBank.Domain.Common;
 using SmplBank.Domain.Dto.Transaction;
@@ -49,6 +52,7 @@ namespace SmplBank
                 .AddSqlDbConnection(Configuration)
                 .AddRepositories(Configuration)
                 .AddCQRS()
+                .AddValidators()
                 .AddCommonServices(Configuration)
                 .AddServices(Configuration)
                 .AddValidators(Configuration)
@@ -143,7 +147,13 @@ namespace SmplBank
         {
             return services
                 .AddMediatR(AppDomain.CurrentDomain.Load("SmplBank.Application"))
-                .AddTransient<IRequestHandler<DepositTransactionRequest>, DepositTransactionHandler>();
+                .RegisterValidationBehaviors();
+        }
+
+        public static IServiceCollection AddValidators(this IServiceCollection services)
+        {
+            return services
+                .AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly);
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
